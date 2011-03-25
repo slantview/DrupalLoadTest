@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+"""
+  DrupalLoadTest - Load testing scripts for testing Drupal.
+  
+  == BEGIN LICENSE ==
+
+  Licensed under the terms of any of the following licenses at your
+  choice:
+
+   - GNU General Public License Version 2 or later (the "GPL")
+     http://www.gnu.org/licenses/gpl.html
+
+   - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+     http://www.gnu.org/licenses/lgpl.html
+
+  == END LICENSE ==
+"""
+import sys, os, string
+# Setup the base path for importing our libraries.
+if string.find(os.path.abspath(sys.argv[0]), os.sep+'DrupalLoadTest') != -1:
+    BASE_PATH = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]), os.pardir, os.pardir))
+    sys.path.insert(0, BASE_PATH)
+    print BASE_PATH
+import dlt
+
+def main(args):
+  """ 
+  Main function for executing script.
+  """
+  
+  tester = dlt.DrupalLoadTest()
+  config = tester.config.get()
+  threads = 1
+  
+  while threads <= int(config['Application']['max_threads']):
+    dlt.log("Running Jmeter with " + str(threads) + " threads", dlt.LOG_NOTICE)
+    
+    tester.jmeter.setOption('n')
+    if (config['Application']['jmx_file'][0] != '/'):
+      tester.jmeter.setOption("t", BASE_PATH + '/' + config['Application']['jmx_file'])
+    else:
+      tester.jmeter.setOption("t", config['Application']['jmx_file'])
+    tester.jmeter.setOption("Jhost=" + config['Application']['host'])
+    tester.jmeter.setOption("Juser=" + config['Drupal']['user'])
+    tester.jmeter.setOption("Jpassword=" + config['Drupal']['pass'])
+    tester.jmeter.setOption("Jthreads=" + str(threads))
+    try:
+      tester.jmeter.run()
+    except Exception, e:
+      print e
+      
+    threads = threads * 2
+
+if __name__ == "__main__":
+  try:
+      main(sys.argv[1:])
+  except KeyboardInterrupt:
+      sys.exit(1)
