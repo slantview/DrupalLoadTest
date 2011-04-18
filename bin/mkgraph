@@ -96,7 +96,7 @@ for label in elapsed:
   # Plot the errors
   if (len(error_x) > 0):
     ax1.scatter(error_x, error_y, color='r', marker='x', zorder=3)
- 
+
   # Plot throughput
   ax2 = ax1.twinx()
   ax2.plot(throughput_data, 'o-', color=paleblue, linewidth=2, markersize=8)

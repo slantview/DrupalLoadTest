@@ -15,7 +15,10 @@
 
   == END LICENSE ==
 """
-import sys, os, string
+import sys
+import os
+import string
+
 # Setup the base path for importing our libraries.
 if string.find(os.path.abspath(sys.argv[0]), os.sep+'DrupalLoadTest') != -1:
     BASE_PATH = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]), os.pardir, os.pardir))
