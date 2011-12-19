@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>grinder</artifactId>
+  <packaging>jar</packaging>
+  <name>${project.artifactId}</name>
+  <url>http://grinder.sourceforge.net</url>
+  <description>The Grinder load testing framework. The Grinder is a load testing
+  framework that makes it easy to run a distributed test using many load
+  injector machines. Test scripts are written in Jython or Clojure. HTTP
+  scripts can be recorded easily from a browser session. </description>
+
+<!-- TODO: don't depend on extra166y -->
+  <parent>
+    <groupId>net.grinder</groupId>
+    <artifactId>grinder-parent</artifactId>
+    <version>3.7-SNAPSHOT</version>
+  </parent>
+
+  <dependencies>
+    <dependency>
+      <groupId>net.grinder</groupId>
+      <artifactId>grinder-dcr-agent</artifactId>
+      <version>3.7-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.grinder</groupId>
+      <artifactId>grinder-http</artifactId>
+      <version>3.7-SNAPSHOT</version>
+    </dependency>
+
+    <!-- grinder-xmlbeans only exports these at compile time, we change their
+      scope to make them available at runtime and to set our manifest classpath
+      correctly. -->
+    <dependency>
+      <groupId>javax.xml</groupId>
+      <artifactId>jsr173</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>xmlbeans</groupId>
+      <artifactId>xbean</artifactId>
+      <version>2.1.0</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <index>true</index>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+
+              <!-- Unfortunately, the maven archive plugin does not provide a
+                   way to filter the list of dependencies used to generate the
+                   classpath. This means the classpath has redundant entries
+                   for things we shade into the jar.
+                -->
+
+              <!-- On the other hand, we've placed the DCR agent in the
+                   "compile" scope, not "provided", specifically so it's in the
+                   manifest classpath and its classes can be loaded if the
+                   agent is not loaded. -->
+              <addClasspath>true</addClasspath>
+            </manifest>
+
+            <manifest-entries>
+              <!-- Add jython.jar up front, so uses cane continue to override by
+                dropping a new version into the lib directory. -->
+              <Class-Path>jython.jar</Class-Path>
+            </manifest-entries>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
+        <artifactId>jetspeed-unpack-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-xsl</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <phase>prepare-package</phase>
+            <configuration>
+              <unpack>
+                <artifact>net.grinder:grinder-http:jar</artifact>
+                <overwrite>true</overwrite>
+                <resources>
+                  <resource>
+                    <destination>unpacked/etc</destination>
+                    <flat>true</flat>
+                    <include>**/*.xsl</include>
+                  </resource>
+                </resources>
+              </unpack>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-xsd</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <phase>prepare-package</phase>
+            <configuration>
+              <unpack>
+                <artifact>net.grinder:grinder-xmlbeans:jar</artifact>
+                <overwrite>true</overwrite>
+                <resources>
+                  <resource>
+                    <destination>unpacked/etc</destination>
+                    <flat>true</flat>
+                    <include>**/*.xsd</include>
+                  </resource>
+                </resources>
+              </unpack>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-license</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <phase>prepare-package</phase>
+            <configuration>
+              <unpack>
+                <artifact>net.grinder:grinder-httpclient:jar</artifact>
+                <overwrite>true</overwrite>
+                <resources>
+                  <resource>
+                    <destination>unpacked</destination>
+                    <flat>true</flat>
+                    <include>META-INF/LICENSE</include>
+                    <name>LICENSE-HTTPClient</name>
+                  </resource>
+                </resources>
+              </unpack>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+        <!-- TODO: How to update these versions with the release plugin? -->
+          <dependency>
+            <groupId>net.grinder</groupId>
+            <artifactId>grinder-http</artifactId>
+            <version>3.7-SNAPSHOT</version>
+          </dependency>
+          <dependency>
+            <groupId>net.grinder</groupId>
+            <artifactId>grinder-httpclient</artifactId>
+            <version>3.7-SNAPSHOT</version>
+          </dependency>
+          <dependency>
+            <groupId>net.grinder</groupId>
+            <artifactId>grinder-xmlbeans</artifactId>
+            <version>3.7-SNAPSHOT</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+
+  </build>
+
+</project>
