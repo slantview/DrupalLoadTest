@@ -19,11 +19,8 @@ import sys
 import os
 import string
 
-# Setup the base path for importing our libraries.
-if string.find(os.path.abspath(sys.argv[0]), os.sep+'DrupalLoadTest') != -1:
-    BASE_PATH = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]), os.pardir, os.pardir))
-    sys.path.insert(0, BASE_PATH)
-    print BASE_PATH
+BASE_PATH = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, BASE_PATH + '/lib')
 import dlt
 
 def main(args):
