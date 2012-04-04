@@ -41,6 +41,7 @@ def main(args):
     else:
       tester.jmeter.setOption("t", config['Application']['jmx_file'])
     tester.jmeter.setOption("Jhost=" + config['Application']['host'])
+    tester.jmeter.setOption("Jport=" + config['Application']['port'])
     tester.jmeter.setOption("Juser=" + config['Drupal']['user'])
     tester.jmeter.setOption("Jpassword=" + config['Drupal']['pass'])
     tester.jmeter.setOption("Jthreads=" + str(threads))
