@@ -28,7 +28,7 @@ CONFIG = {
     'host': 'localhost',
     'port': '80',
     'max_threads': '128',
-    'jmx_file'
+    'jmx_file': 'tests/basic-stress.jmx'
   },
   'Drupal': {
     'user': 'root',

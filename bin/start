@@ -19,7 +19,7 @@ import sys
 import os
 import string
 
-BASE_PATH = os.path.abspath(os.path.dirname(__file__))
+BASE_PATH = os.path.abspath(os.path.dirname(__file__) + '/..')
 sys.path.insert(0, BASE_PATH + '/lib')
 import dlt
 
